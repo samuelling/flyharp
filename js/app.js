@@ -215,6 +215,7 @@
     const t0 = performance.now(), step = () => { window.dispatchEvent(new Event('resize')); if (performance.now() - t0 < 380) requestAnimationFrame(step); }; requestAnimationFrame(step);
   }
   $('drawerClose').onclick = () => setDrawer(false);
+  window.addEventListener('flyharp:drawer', e => { setDrawer(true); const b = document.querySelector(`.tabs button[data-tab="${e.detail}"]`); if (b) b.onclick(); });
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
     document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
     document.querySelectorAll('#panels .panel').forEach(pn => pn.classList.toggle('on', pn.id === 'panel-' + b.dataset.tab));
@@ -380,7 +381,7 @@
       order.forEach(([, t], r) => tauRank[t] = r / (order.length - 1));
       layoutCascade(); ready = true; Tonnectome.init({P});
       eyemapP.then(() => { if (!eyemap) $('eyeGeom').disabled = true; else if ($('eyeGeom').value === 'real') setGeometry('real'); });
-      $('eyeGeom').onchange = () => { setGeometry($('eyeGeom').value); $('eyehint').textContent = G.mode === 'real' ? `The measured eye: ${eyemap.ommatidia} ommatidia, ${eyemap.median_dphi_deg.toFixed(1)}° apart on average, finest along the equator. Each facet is drawn where it looks (azimuthal-equidistant projection about the centre column); the network and its wiring are unchanged.` : ''; }; applyPreset('cascade'); sendGain(); setupProbe();
+      $('eyeGeom').onchange = () => { setGeometry($('eyeGeom').value); $('eyehint').textContent = G.mode === 'real' ? `The measured eye: ${eyemap.ommatidia} ommatidia, ${eyemap.median_dphi_deg.toFixed(1)}° apart on average, finest along the equator. Each facet is drawn where it looks (azimuthal-equidistant projection about the centre column); the network and its wiring are unchanged.` : ''; }; applyPreset('cascade'); sendGain(); setupProbe(); Hands.init();
       // the camera is asked for only after the visitor clicks to begin (see the begin overlay below)
       window.FlyHarp = {types, X, Y, nodeOf, scale, groupOf, N: m.N, nE: m.nE, dv: () => lastDV,
         requestEdges: k => worker.postMessage({cmd: 'edges', k})};
@@ -424,7 +425,20 @@
   }
   let frameN = 0;
   const stats = {notes: 0, byGroup: [0, 0, 0, 0, 0], dep: 0, hyp: 0};
-  window.__flyharp = {stats, P, area, get meter() { return meter; }, fbR, get fbInfo() { return fbInfo; }, get strings() { return strings; }, get simT() { return simT; }, toggleType: t => toggleType(t)};
+  window.__flyharp = {stats, P, area, get meter() { return meter; }, fbR, get fbInfo() { return fbInfo; }, get strings() { return strings; }, get simT() { return simT; }, toggleType: t => toggleType(t),
+    // for js/hands.js (Invisible Hands): the per-area mixer, the eye's lens, and the scene's overall motion
+    instruments: Object.keys(INSTRUMENTS), instLabel: k => INSTRUMENTS[k].label,
+    setEngine(g, k) { if (area[g].engine !== k) { area[g].engine = k; buildStrings(); renderHier(); } },
+    setMute(g, on) { if (area[g].mute !== on) { area[g].mute = on; renderHier(); } },
+    setLevel(g, v) { area[g].level = v; const el = document.querySelector(`#hier .area[data-g="${g}"] .lvl`); if (el) el.value = v; },
+    get lenses() { return LENSES.map(L => L.id); }, get lens() { return lens; }, setLens(id) { if (lens !== id) { lens = id; renderLenses(); } },
+    motion() {   // mean flow over the eye, in the decoder's units relative to its recent peak
+      if (!ready) return {dir: 0, mag: 0};
+      const f = motionField(); let sx = 0, sy = 0, n = 0;
+      for (let k = 0; k < f.vx.length; k++) if (f.mags[k] > 0) { sx += f.vx[k]; sy += f.vy[k]; n++; }
+      if (!n) return {dir: 0, mag: 0};
+      return {dir: Math.atan2(sy, sx), mag: Math.hypot(sx, sy) / n / f.norm};
+    }};
 
   // ---------------------------------------------------------------- drawing: the eye and its lenses
   const LENSES = [

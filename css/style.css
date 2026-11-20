@@ -302,3 +302,15 @@ label.small{font-size:12.5px;margin:3px 0}
 .whatDlg dt{color:var(--ink);margin-top:8px}.whatDlg dd{margin:2px 0 0 0}
 .whatDlg b{color:var(--ink)}
 .whatClose{position:sticky;top:0;float:right;margin:-8px -10px 0 0;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#1b1d22;color:var(--ink);font-size:20px;line-height:1;cursor:pointer}
+
+/* Invisible Hands */
+.ihHead{font:400 20px/1 "Bowlby One SC","Arial Black",Impact,sans-serif;color:#FFD23F;text-shadow:1.5px 1.5px 0 #FF7A1A;margin:4px 0 8px;letter-spacing:-.01em}
+.handsPanel{background:#121419;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0 12px}
+.handsPanel .ih-dot.on{background:#FFD23F}
+.ihList{margin:0 0 8px}.ihList summary{cursor:pointer;color:#cfccc4;font-size:13px}
+.handsBadge{display:inline-flex;align-items:center;gap:7px;font:600 12.5px/1 "Spline Sans","Helvetica Neue",Arial,sans-serif;padding:7px 12px;border-radius:16px;border:1px solid var(--line);background:#16181d;color:#cfccc4;cursor:pointer}
+.handsBadge i{width:9px;height:9px;border-radius:50%;background:#6b6862}
+.handsBadge.on i{background:#FFD23F;box-shadow:0 0 8px #FFD23F}.handsBadge.wait i{background:#FF7A1A}.handsBadge.blocked i{background:#6b6862;box-shadow:none}
+.handsBadge.pulse{animation:ihPulse .5s ease-out}
+@keyframes ihPulse{0%{border-color:#FFD23F;box-shadow:0 0 0 0 #ffd23f88}100%{border-color:var(--line);box-shadow:0 0 0 10px #ffd23f00}}
+input.ihMoved,select.ihMoved{outline:2px solid #FFD23F;outline-offset:2px;border-radius:6px;transition:outline-color .4s}

@@ -6,7 +6,7 @@
 <title>FlyHarp · a synthesizer played by the fly visual system</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Courier+Prime:wght@400;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202611111247">
+<link rel="stylesheet" href="css/style.css?v=202611200206">
 </head>
 <body>
 <header>
@@ -46,6 +46,7 @@
   </div>
   <button id="go" class="go">▶ Start</button>
   <button id="whatBtn" class="whatBtn" aria-haspopup="dialog">What?</button>
+  <button id="handsBadge" class="handsBadge" hidden title="Invisible Hands"><i></i><span>linking…</span></button>
   <div id="status" class="status">loading the optic lobe…</div>
 </header>
 
@@ -179,7 +180,7 @@
 <aside id="drawer" class="drawer" aria-label="Controls">
   <button id="menuBtn" class="drawerTab" aria-expanded="false" aria-controls="drawer" title="Controls (Tab)"><span class="grip" aria-hidden="true"></span><span class="tabWord">Controls</span><span class="grip" aria-hidden="true"></span></button>
   <div class="drawerHead"><nav class="tabs" role="tablist">
-    <button data-tab="stimulus" class="on">Stimulus</button><button data-tab="instrument">Instrument</button><button data-tab="hearing">Hearing</button><button data-tab="model">Model</button>
+    <button data-tab="stimulus" class="on">Stimulus</button><button data-tab="instrument">Instrument</button><button data-tab="hearing">Hearing</button><button data-tab="model">Model</button><button data-tab="hands">Hands</button>
   </nav><button id="drawerClose" class="drawerClose" aria-label="Close controls">✕</button></div>
   <div id="panels">
     <section class="panel on" id="panel-stimulus">
@@ -292,6 +293,15 @@
     </section>
 
     </section>
+    <section class="panel" id="panel-hands">
+      <h3 class="ihHead">Invisible Hands</h3>
+      <p class="hint">Let another app move FlyHarp from anywhere: a CV source such as MEGA·CV, the Invisible Hands console, or another instrument. Start a room and send the invite link, or join a room someone gives you. Only numbers travel.</p>
+      <div id="handsPanel" class="handsPanel"></div>
+      <details class="ihList"><summary>What can be moved · <span id="handsCount"></span></summary><p class="hint" id="handsList"></p>
+        <p class="hint">Every value travels as 0 to 1 over a control's own range; menus step through their options. A modulation swings a control around where you left it, and anything you are dragging stays yours. The camera and microphone can only be switched on here.</p></details>
+      <details class="ihList"><summary>What the fly sends back</summary><p class="hint" id="handsOuts"></p>
+        <p class="hint">Fifteen times a second, to anyone in the room: notes per second, each optic-lobe stage's and auditory area's activity (relative to its own recent peak), and the direction and strength of the scene's motion as the fly's motion detectors read it. Patch them into anything.</p></details>
+    </section>
   </div>
 </aside>
 <dialog id="whatDlg" class="whatDlg" aria-labelledby="whatTitle">
@@ -304,6 +314,7 @@
     <li><b>Allow the camera</b> when asked, then move, wave, or point it at something moving. Nothing leaves your device. No camera? Pick a stimulus instead.</li>
     <li><b>Open the controls</b> with the tab on the right edge (or the Tab key): <i>Stimulus</i> sets what the eye sees, <i>Instrument</i> which instruments each part of the eye plays, <i>Hearing</i> what the ears listen to, <i>Model</i> the science settings.</li>
     <li><b>Slow the tempo</b> to stretch the fly's milliseconds into melodies; try the ensembles for whole new sounds.</li>
+    <li><b>Let someone else play it.</b> The <i>Hands</i> tab links FlyHarp to other apps over the internet (Invisible Hands): a CV source can sweep its sliders, and the fly's activity streams back out as control signals.</li>
   </ol>
 
   <h3>The three views</h3>
@@ -337,16 +348,18 @@
   </div>
 </div>
 <div id="tip" class="tip" role="tooltip"></div>
-<script>window.FH_V = '202611111247';  /* build stamp, set by tools/stamp.py: versions workers, worklet and data too */</script>
-<script src="js/info.js?v=202611111247"></script>
-<script src="js/stimuli.js?v=202611111247"></script>
-<script src="js/eyegeom.js?v=202611111247"></script>
-<script src="js/ear-net.js?v=202611111247"></script>
-<script src="js/tonnectome.js?v=202611111247"></script>
-<script src="js/audio.js?v=202611111247"></script>
-<script src="js/synth.js?v=202611111247"></script>
-<script src="js/app.js?v=202611111247"></script>
-<script type="module" src="js/ear3d.js?v=202611111247"></script>
-<script type="module" src="js/lobe.js?v=202611111247"></script>
+<script>window.FH_V = '202611200206';  /* build stamp, set by tools/stamp.py: versions workers, worklet and data too */</script>
+<script src="js/info.js?v=202611200206"></script>
+<script src="js/stimuli.js?v=202611200206"></script>
+<script src="js/eyegeom.js?v=202611200206"></script>
+<script src="js/ear-net.js?v=202611200206"></script>
+<script src="js/tonnectome.js?v=202611200206"></script>
+<script src="js/audio.js?v=202611200206"></script>
+<script src="js/vendor/invisible-hands.js?v=202611200206"></script>
+<script src="js/hands.js?v=202611200206"></script>
+<script src="js/synth.js?v=202611200206"></script>
+<script src="js/app.js?v=202611200206"></script>
+<script type="module" src="js/ear3d.js?v=202611200206"></script>
+<script type="module" src="js/lobe.js?v=202611200206"></script>
 </body>
 </html>

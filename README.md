@@ -50,6 +50,11 @@ A synthesizer played by the *Drosophila* visual system. A stimulus (or your webc
     - **How a population becomes a picture.** Each neuron gets a preferred antenna and pitch, inherited through the wiring (`EarNet.tuning`). A vibration JON is tuned to its own band; a deflection JON is flat; every other cell takes the synapse-weighted sum of its excitatory inputs' preferences. A lens population is then read out every 5 ms as a 2 × 32 band profile: the mean firing of its cells, weighted by those preferences, scaled to its own recent peak. That profile replaces the antennae's in every picture. Going inward, cells mix the two ears (laterality falls from 1.0 in Johnston's organ to 0.70 in the AMMC and 0.24 in the wedge) and listen more broadly, so pitch blurs and timing and loudness carry more of the picture.
     - **Picture features.** *Shape*, *brightness* and *colour* can each follow a different population, for example the shape from the wedge and the colour from the ventrolateral areas. Colour is drawn on screen only: the eye model sees in grey.
 - **Synthesthesia** (third tab). The whole loop on one screen. The eye is shown only what its ears hear (a slider mixes the stimulus back in), and a live schematic of the fly's head runs from front to back. Light enters the compound eyes and passes through lamina, medulla, lobula and lobula plate; the optic lobe plays the instrument; sound reaches the antennae; the auditory areas pass it inward; the lens population paints a picture; and the picture beams back into the eyes. Every area glows with its own activity relative to its recent peak. The full-size eye and picture sit underneath.
+- **Invisible Hands** (the *Hands* tab in the drawer). Lets another app move FlyHarp over the internet and listen to the fly, using the [Invisible Hands](https://github.com/samuelling/InvisibleHands) protocol (a copy of its drop-in file is in `js/vendor/`). Start or join a room; `?room=<code>` in the address joins by itself.
+  - **What can be moved (52 controls).** The stimulus, the instrument, the per-area mixer (instrument, level and mute for each optic-lobe stage), the eye's and ear's lenses and pictures, gain control, eye geometry, and the Synthesthesia loop. Each value travels as 0 to 1 over the control's own range, and a menu steps through its options. A remote move fires the same events a hand would, so the readouts stay in step.
+  - **Remote moves never take over.** A modulation swings a control around where you left it, a control you are dragging stays yours, and one switch turns remote control off.
+  - **Not movable:** the camera, the microphone and MIDI routing, which only the person at the page can switch on.
+  - **What it sends back (13 outputs), fifteen times a second:** notes per second; each optic-lobe stage's activity; each auditory area's activity; and the direction and strength of the scene's motion as the fly's motion detectors read it. Activity is relative to its own recent peak.
 - **Hover cards** (`js/info.js`) give each visual area and each of the 65 cell types a short summary of its putative role, plus live facts: time constant, its notes, and how often it has plucked.
 
 ## Files
@@ -61,6 +66,8 @@ js/gain.js           optional photoreceptor adaptation and divisive normalizatio
 js/eyegeom.js        eye geometry: idealized lattice or measured eye; facets and lattice-to-world Jacobians
 js/tonnectome.js     The Tonnectome: ear pictures, hearing lenses, ear -> eye
 js/synth.js          Synthesthesia: the live head schematic of the loop
+js/hands.js          Invisible Hands: FlyHarp's controls and outputs for remote apps
+js/vendor/invisible-hands.js   the Invisible Hands drop-in (from samuelling/InvisibleHands)
 js/ear3d.js          the auditory connectome in 3D (three.js), lit by the ear model
 js/ear-worklet.js    antennae: resonance + 32-band push/pull filterbank (AudioWorklet)
 js/ear-net.js, js/ear-worker.js  Johnston's organ + early auditory network from FlyWire

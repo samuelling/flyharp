@@ -517,6 +517,7 @@ const Tonnectome = (() => {
     }
   }
   const _dbg = () => ({popKeys, popGen, popMax, popLv, bandSum: bandV.reduce((a, b) => a + b, 0), fieldSum: field.reduce((a, b) => a + b, 0), view: P && P.earView});
-  return {init, onAudioStart, setView, _dbg, AREAS, areaLvl, get areaOf() { return areaOf; }, get lens() { return earLens; }, get shapeMask() { return shapeMask; }, get frames() { return frames; }, get attached() { return attached; }, get rates() { return rates; }};
+  function setLens(id) { if (id === earLens && !earType) return; earLens = id; earType = null; sendPops(); renderEarLenses(); }
+  return {init, onAudioStart, setView, setLens, get view() { return P && P.earView; }, VIEWS: ['coch', 'brain', 'chladni', 'ripples', 'helix', 'rhythm', 'glass'], _dbg, AREAS, areaLvl, get areaOf() { return areaOf; }, get lens() { return earLens; }, get shapeMask() { return shapeMask; }, get frames() { return frames; }, get attached() { return attached; }, get rates() { return rates; }};
 })();
 window.Tonnectome = Tonnectome;   // for the module scripts (js/ear3d.js) and js/synth.js: a top-level const is not a window property
