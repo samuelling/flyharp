@@ -54,6 +54,7 @@ A synthesizer played by the *Drosophila* visual system. A stimulus (or your webc
   - **What can be moved (52 controls).** The stimulus, the instrument, the per-area mixer (instrument, level and mute for each optic-lobe stage), the eye's and ear's lenses and pictures, gain control, eye geometry, and the Synthesthesia loop. Each value travels as 0 to 1 over the control's own range, and a menu steps through its options. A remote move fires the same events a hand would, so the readouts stay in step.
   - **Remote moves never take over.** A modulation swings a control around where you left it, a control you are dragging stays yours, and one switch turns remote control off.
   - **Not movable:** the camera, the microphone and MIDI routing, which only the person at the page can switch on.
+  - **The mark.** Every movable control carries the [Invisible Hands mark](https://samuelling.github.io/InvisibleHands/brand/): grey while FlyHarp is unlinked, in colour once linked, and at full strength when others are in the room. Its pointer follows the value, and its orange jumps when someone else moves the control. Controls without the mark cannot be moved remotely. The header's **Hands** button shows the link and opens the panel.
   - **What it sends back (13 outputs), fifteen times a second:** notes per second; each optic-lobe stage's activity; each auditory area's activity; and the direction and strength of the scene's motion as the fly's motion detectors read it. Activity is relative to its own recent peak.
 - **Hover cards** (`js/info.js`) give each visual area and each of the 65 cell types a short summary of its putative role, plus live facts: time constant, its notes, and how often it has plucked.
 
@@ -67,7 +68,7 @@ js/eyegeom.js        eye geometry: idealized lattice or measured eye; facets and
 js/tonnectome.js     The Tonnectome: ear pictures, hearing lenses, ear -> eye
 js/synth.js          Synthesthesia: the live head schematic of the loop
 js/hands.js          Invisible Hands: FlyHarp's controls and outputs for remote apps
-js/vendor/invisible-hands.js   the Invisible Hands drop-in (from samuelling/InvisibleHands)
+js/vendor/invisible-hands.js   the Invisible Hands drop-in (from samuelling/InvisibleHands b1e037c)
 js/ear3d.js          the auditory connectome in 3D (three.js), lit by the ear model
 js/ear-worklet.js    antennae: resonance + 32-band push/pull filterbank (AudioWorklet)
 js/ear-net.js, js/ear-worker.js  Johnston's organ + early auditory network from FlyWire

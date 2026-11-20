@@ -159,6 +159,7 @@
       const nm = el.querySelector('.nm');
       nm.onmousemove = e => showTip(areaCard(g), e.clientX, e.clientY); nm.onmouseleave = hideTip;
     });
+    window.dispatchEvent(new Event('flyharp:hier'));   // js/hands.js re-pins its marks on the new mixer
   }
   const tauOf = t => tauList[types.indexOf(t)] || 0.05;
   let tauList = [];

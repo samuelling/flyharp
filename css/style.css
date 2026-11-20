@@ -304,13 +304,25 @@ label.small{font-size:12.5px;margin:3px 0}
 .whatClose{position:sticky;top:0;float:right;margin:-8px -10px 0 0;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#1b1d22;color:var(--ink);font-size:20px;line-height:1;cursor:pointer}
 
 /* Invisible Hands */
-.ihHead{font:400 20px/1 "Bowlby One SC","Arial Black",Impact,sans-serif;color:#FFD23F;text-shadow:1.5px 1.5px 0 #FF7A1A;margin:4px 0 8px;letter-spacing:-.01em}
+.ihHead{display:flex;align-items:center;gap:10px;font:800 26px/1 "Big Shoulders Stencil Display","Arial Narrow",Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;color:#2FB3B0;text-shadow:1.5px 1px 0 #FF7A45;margin:4px 0 10px}
 .handsPanel{background:#121419;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0 12px}
-.handsPanel .ih-dot.on{background:#FFD23F}
+.handsPanel .ih-dot.on{background:#2FB3B0}
 .ihList{margin:0 0 8px}.ihList summary{cursor:pointer;color:#cfccc4;font-size:13px}
-.handsBadge{display:inline-flex;align-items:center;gap:7px;font:600 12.5px/1 "Spline Sans","Helvetica Neue",Arial,sans-serif;padding:7px 12px;border-radius:16px;border:1px solid var(--line);background:#16181d;color:#cfccc4;cursor:pointer}
-.handsBadge i{width:9px;height:9px;border-radius:50%;background:#6b6862}
-.handsBadge.on i{background:#FFD23F;box-shadow:0 0 8px #FFD23F}.handsBadge.wait i{background:#FF7A1A}.handsBadge.blocked i{background:#6b6862;box-shadow:none}
-.handsBadge.pulse{animation:ihPulse .5s ease-out}
-@keyframes ihPulse{0%{border-color:#FFD23F;box-shadow:0 0 0 0 #ffd23f88}100%{border-color:var(--line);box-shadow:0 0 0 10px #ffd23f00}}
+.handsBadge{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 "Spline Sans","Helvetica Neue",Arial,sans-serif;padding:4px 12px 4px 5px;border-radius:999px;border:1px solid var(--line);background:#16181d;color:#cfccc4;cursor:pointer;min-height:34px}
+.handsBadge .ihMk{display:inline-flex;opacity:.45;filter:grayscale(1);transition:opacity .3s,filter .3s}
+.handsBadge.linked .ihMk{opacity:.8;filter:none}.handsBadge.live .ihMk{opacity:1}.handsBadge.wait .ihMk{opacity:.7;filter:grayscale(.5)}
+.handsBadge .ihN{font-variant-numeric:tabular-nums;color:#8d8a83}
+.handsBadge.live{border-color:#2FB3B066}
+.handsBadge.hit .ih-flame{transform:translate(2.5px,-1.5px)}
+.handsBadge.hit{animation:ihPulse .5s ease-out}
+@keyframes ihPulse{0%{box-shadow:0 0 0 0 #2FB3B088}100%{box-shadow:0 0 0 10px #2FB3B000}}
+.ihLab{display:inline-flex;align-items:center;gap:0}
+.ihLensRow{display:flex;justify-content:flex-end;align-items:center;font:700 9.5px/1 "Courier Prime","Courier New",monospace;letter-spacing:.12em;text-transform:uppercase;color:#8a8f98;margin:-2px 0 4px}
+.tabs button .ih-icon{margin-right:5px;vertical-align:-2px}
+.earAllRow{align-items:center;gap:4px}
+#tnViews .ih-tag{align-self:center}
 input.ihMoved,select.ihMoved{outline:2px solid #FFD23F;outline-offset:2px;border-radius:6px;transition:outline-color .4s}
+
+/* the Invisible Hands mark, in its on-dark inks */
+:root{--ih-teal:#2FB3B0;--ih-flame:#FF7A45;--ih-cut:#101217}
+input.ihMoved,select.ihMoved,button.ihMoved{outline-color:#2FB3B0}

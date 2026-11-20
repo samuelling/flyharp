@@ -17,7 +17,9 @@ const Hands = (() => {
   const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v;
   let hands = null;
   const base = new Map();     // where a control stood before modulation: the person's own setting is the centre
-  let held = null;            // the control a person is dragging right now: local hands win
+  let held = null;            // id of the control a person is dragging right now: local hands win
+  const ihId = el => el && (el.dataset.ih || el.id);
+  const elOf = id => $(id) || document.querySelector(`[data-ih="${id}"]`);
 
   // ---------------------------------------------------------------- controls
   function labelOf(el) {
@@ -26,11 +28,11 @@ const Hands = (() => {
     const t = [...lab.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join(' ').trim();
     return t || el.id;
   }
-  function flash(el) { if (!el) return; el.classList.add('ihMoved'); clearTimeout(el._ihT); el._ihT = setTimeout(() => el.classList.remove('ihMoved'), 500); }
+  function flash(id) { const el = elOf(id); if (!el) return; el.classList.add('ihMoved'); clearTimeout(el._ihT); el._ihT = setTimeout(() => el.classList.remove('ihMoved'), 500); }
   function param(id, label, get, set, el, kind) {
     return {id, label: label.slice(0, 64), kind: kind || 'cont', get,
-      set(v) { if (held && held === el) return; set(v); base.set(id, v); flash(el); },
-      mod(v) { if (held && held === el) return; if (!base.has(id)) base.set(id, get()); set(clamp(base.get(id) + v)); flash(el); }};
+      set(v) { if (held === id) return; set(v); base.set(id, v); flash(id); },
+      mod(v) { if (held === id) return; if (!base.has(id)) base.set(id, get()); set(clamp(base.get(id) + v)); flash(id); }};
   }
   function range(id, label) {
     const el = () => $(id);
@@ -110,31 +112,70 @@ const Hands = (() => {
       {id: 'motion', label: 'motion strength', get: () => clamp(mot.mag * 2)}, ...ear];
   }
 
+  // ---------------------------------------------------------------- where each mark goes
+  // A labelled control: the mark joins the label's words (wrapped in a span, so grid layouts keep their columns).
+  // The mixer: beside each area's instrument menu, level slider and mute button. Lenses and pictures: beside their row.
+  function anchor(id) {
+    const g = /^(eng|lvl|mute)(\d)$/.exec(id);
+    if (g) return t => {
+      const box = document.querySelector(`#hier .area[data-g="${g[2]}"]`); if (!box) return;
+      const el = box.querySelector(g[1] === 'eng' ? '.eng' : g[1] === 'lvl' ? '.lvl' : '.mute'); el.dataset.ih = id;
+      if (g[1] === 'mute') el.after(t); else el.before(t);
+    };
+    if (id === 'eyeLens') return t => { let row = $('ihEyeLens'); if (!row) { row = document.createElement('div'); row.id = 'ihEyeLens'; row.className = 'ihLensRow'; row.textContent = 'lens'; $('lenses').before(row); } row.prepend(t); };
+    if (id === 'earLens') return t => document.querySelector('.earAllRow').prepend(t);
+    if (id === 'earView') return t => $('tnViews').prepend(t);
+    const el = $(id); if (!el) return null;
+    const lab = el.closest('label');
+    if (!lab) return t => el.before(t);
+    return t => {
+      let w = lab.querySelector(':scope > .ihLab');
+      if (!w) {
+        const tn = [...lab.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+        w = document.createElement('span'); w.className = 'ihLab';
+        if (tn) { w.textContent = tn.textContent.trim(); tn.replaceWith(w); w.after(' '); if (lab.firstChild !== w) w.before(' '); } else lab.prepend(w);
+      }
+      w.append(t);
+    };
+  }
+
   // ---------------------------------------------------------------- the panel and the badge
   function init() {
     if (hands || !window.InvisibleHands) return;
     const params = buildParams();
     hands = InvisibleHands.create({app: 'flyharp', name: 'FlyHarp', params, outs: buildOuts()});
     // local hands win: while a person drags a control, remote moves of it wait; afterwards their setting is the centre
-    document.addEventListener('pointerdown', e => { const el = e.target.closest('input, select'); if (el) held = el; }, true);
+    const mine = e => { if (!e.isTrusted) return; const el = e.target.closest('input, select, button'), id = ihId(el); const p = id && params.find(q => q.id === id); if (p) base.set(p.id, p.get()); };
+    document.addEventListener('pointerdown', e => { held = ihId(e.target.closest('input, select')) || null; }, true);
     document.addEventListener('pointerup', () => { held = null; }, true);
-    document.addEventListener('input', e => { if (e.isTrusted && e.target.id) { const p = params.find(q => q.id === e.target.id); if (p) base.set(p.id, p.get()); } }, true);
-    document.addEventListener('change', e => { if (e.isTrusted && e.target.id) { const p = params.find(q => q.id === e.target.id); if (p) base.set(p.id, p.get()); } }, true);
+    for (const ev of ['input', 'change']) document.addEventListener(ev, mine, true);
+    document.addEventListener('click', e => setTimeout(() => mine(e)), true);   // the mixer's mute button flips on click
+    // the mark (samuelling.github.io/InvisibleHands/brand): pinned beside every control the room can move, and nowhere
+    // else; grey while unlinked, coloured once linked, full strength with others in the room; the orange jumps on a move
+    const tags = new Map(params.map(p => [p.id, hands.tag(p.id)]));
+    const pin = () => {
+      for (const p of params) {
+        const t = tags.get(p.id); if (t.isConnected) continue;
+        const at = anchor(p.id); if (at) at(t);
+      }
+    };
+    window.addEventListener('flyharp:hier', pin); pin();
     $('handsPanel').appendChild(hands.panel());
     $('handsCount').textContent = `${params.length} controls`;
     $('handsList').textContent = params.map(p => p.label).join(' · ');
     $('handsOuts').textContent = buildOuts().map(o => o.label).join(' · ');
-    const badge = $('handsBadge');
+    const badge = $('handsBadge'), mk = InvisibleHands.icon({size: 22, title: 'Invisible Hands'});
+    badge.querySelector('.ihMk').append(mk);
+    document.querySelector('.ihHead .ihMk').append(InvisibleHands.icon({size: 30}));
+    const tab = document.querySelector('.tabs button[data-tab="hands"]'); tab.prepend(InvisibleHands.icon({mini: true, size: 15}));
     let lastIn = 0;
     const draw = () => {
-      const st = hands.status, n = hands.peers.length;
-      badge.hidden = st === 'off';
-      badge.classList.toggle('on', st === 'on'); badge.classList.toggle('wait', st === 'connecting' || st === 'retrying');
-      badge.classList.toggle('blocked', !hands.allow);
-      badge.querySelector('span').textContent = st === 'on' ? (hands.allow ? `linked · ${n} other${n === 1 ? '' : 's'}` : 'linked · hands off') : st === 'error' ? 'not linked' : 'linking…';
+      const st = hands.status, n = hands.peers.length, linked = st === 'on' && hands.allow;
+      badge.classList.toggle('linked', linked); badge.classList.toggle('live', linked && n > 0); badge.classList.toggle('wait', st === 'connecting' || st === 'retrying');
+      badge.querySelector('.ihN').textContent = st === 'on' ? (hands.allow ? (n ? `· ${n}` : '· alone') : '· hands off') : st === 'error' ? '· not linked' : st === 'off' ? '' : '· linking';
     };
     hands.on('status', draw); hands.on('peers', draw); hands.on('allow', draw);
-    hands.on('in', () => { const now = performance.now(); if (now - lastIn > 120) { badge.classList.remove('pulse'); void badge.offsetWidth; badge.classList.add('pulse'); lastIn = now; } });
+    hands.on('in', () => { const now = performance.now(); if (now - lastIn > 120) { badge.classList.remove('hit'); void badge.offsetWidth; badge.classList.add('hit'); lastIn = now; } });
     badge.onclick = () => { window.dispatchEvent(new CustomEvent('flyharp:drawer', {detail: 'hands'})); };
     draw();
     window.HANDS = hands;
