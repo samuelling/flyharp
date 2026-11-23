@@ -2,7 +2,7 @@
 
 A synthesizer played by the *Drosophila* visual system. A stimulus (or your webcam) drives the photoreceptors of a connectome-constrained model of the fly optic lobe. The resulting cascade through retina → lamina → medulla → lobula plate is turned into notes.
 
-**Play:** https://samuelling.github.io/FlyHarp/ (GitHub Pages from `main`, root)
+**Play:** https://linglab.org/flyharp/ (GitHub Pages from `main`, root)
 
 **Layout.** Two views, toggled by the big tabs under the header. *What its Connectome Sees* shows the eye, its lenses and wiring, the 3D optic lobe and the cascade. *What its Connectome Hears* shows the ear pictures, the piano roll, and the auditory connectome in 3D: the ear network's 4,222 neurons at their FlyWire positions, with the 6,000 strongest synapses, lit live by the ear model. Every control lives in a drawer on the right, in four tabs: Stimulus, Instrument, Hearing and Model. Tap or drag its edge tab, or press Tab. On wide screens it opens by default and the page narrows beside it.
 
@@ -54,7 +54,7 @@ A synthesizer played by the *Drosophila* visual system. A stimulus (or your webc
   - **What can be moved (52 controls).** The stimulus, the instrument, the per-area mixer (instrument, level and mute for each optic-lobe stage), the eye's and ear's lenses and pictures, gain control, eye geometry, and the Synthesthesia loop. Each value travels as 0 to 1 over the control's own range, and a menu steps through its options. A remote move fires the same events a hand would, so the readouts stay in step.
   - **Remote moves never take over.** A modulation swings a control around where you left it, a control you are dragging stays yours, and one switch turns remote control off.
   - **Not movable:** the camera, the microphone and MIDI routing, which only the person at the page can switch on.
-  - **The mark.** Every movable control carries the [Invisible Hands mark](https://samuelling.github.io/InvisibleHands/brand/): grey while FlyHarp is unlinked, in colour once linked, and at full strength when others are in the room. Its pointer follows the value, and its orange jumps when someone else moves the control. Controls without the mark cannot be moved remotely. The header's **Hands** button shows the link and opens the panel.
+  - **The mark.** Every movable control carries the [Invisible Hands mark](https://linglab.org/invisiblehands/brand/): grey while FlyHarp is unlinked, in colour once linked, and at full strength when others are in the room. Its pointer follows the value, and its orange jumps when someone else moves the control. Controls without the mark cannot be moved remotely. The header's **Hands** button shows the link and opens the panel.
   - **What it sends back (13 outputs), fifteen times a second:** notes per second; each optic-lobe stage's activity; each auditory area's activity; and the direction and strength of the scene's motion as the fly's motion detectors read it. Activity is relative to its own recent peak.
 - **Hover cards** (`js/info.js`) give each visual area and each of the 65 cell types a short summary of its putative role, plus live facts: time constant, its notes, and how often it has plucked.
 

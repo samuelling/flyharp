@@ -150,7 +150,7 @@ const Hands = (() => {
     document.addEventListener('pointerup', () => { held = null; }, true);
     for (const ev of ['input', 'change']) document.addEventListener(ev, mine, true);
     document.addEventListener('click', e => setTimeout(() => mine(e)), true);   // the mixer's mute button flips on click
-    // the mark (samuelling.github.io/InvisibleHands/brand): pinned beside every control the room can move, and nowhere
+    // the mark (linglab.org/invisiblehands/brand): pinned beside every control the room can move, and nowhere
     // else; grey while unlinked, coloured once linked, full strength with others in the room; the orange jumps on a move
     const tags = new Map(params.map(p => [p.id, hands.tag(p.id)]));
     const pin = () => {
