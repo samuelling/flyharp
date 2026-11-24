@@ -1,6 +1,10 @@
 // Sound out: internal multi-timbral voices (AudioWorklet) + Web MIDI.
 const Sound = (() => {
   let ctx = null, node = null, master = null, wet = null, dry = null, bus = null, ready = false;
+  let revIn = null, dIn = null, dL = null, dR = null, fbL = null, fbR = null;
+  const D = {on: true, time: 0.38, fb: 0.4, mix: 0.3, depth: 0.6};   // echo settings (the drawer's sliders)
+  const M = {mx: 0, my: 0, s: 0};                                     // the fly's motion: rightward, upward, strength
+  const now = {tL: 0.38, tR: 0.38, fb: 0.4, send: 0};
   let ear = null;   // The Tonnectome: {node, own, mic, micSrc} — the fly's antenna listening to the instrument and/or the microphone
   let midi = null, out = null;
   const pending = [];
@@ -13,14 +17,27 @@ const Sound = (() => {
     dry = ctx.createGain(); dry.gain.value = 0.8; dry.connect(bus);
     const rev = ctx.createConvolver(); rev.buffer = impulse(3.2, 2.5);
     wet = ctx.createGain(); wet.gain.value = 0.35; rev.connect(wet); wet.connect(bus);
+    revIn = ctx.createGain(); revIn.gain.value = 1; revIn.connect(rev);      // the reverb's on/off: its tail rings out
+    // echo: a ping-pong delay (left echo feeds the right and back), darkened a little on each repeat; the fly's
+    // motion read-out can push its times, feedback and send around (setMotion)
+    dIn = ctx.createGain(); dIn.gain.value = 0;
+    const split = ctx.createChannelSplitter(2), merge = ctx.createChannelMerger(2);
+    dL = ctx.createDelay(3); dR = ctx.createDelay(3); fbL = ctx.createGain(); fbR = ctx.createGain();
+    const tL = ctx.createBiquadFilter(), tR = ctx.createBiquadFilter(); tL.type = tR.type = 'lowpass'; tL.frequency.value = tR.frequency.value = 3800;
+    dIn.connect(split); split.connect(dL, 0); split.connect(dR, 1);
+    dL.connect(tL); tL.connect(fbL); fbL.connect(dR);
+    dR.connect(tR); tR.connect(fbR); fbR.connect(dL);
+    dL.connect(merge, 0, 0); dR.connect(merge, 0, 1);
+    const dOut = ctx.createGain(); dOut.gain.value = 0.9; merge.connect(dOut); dOut.connect(bus); dOut.connect(revIn);
+    applyDelay(true);
     try {
       await ctx.audioWorklet.addModule('js/voices-worklet.js' + (window.FH_V ? '?v=' + window.FH_V : ''));
       node = new AudioWorkletNode(ctx, 'voices', {outputChannelCount: [2]});
-      node.connect(dry); node.connect(rev);
+      node.connect(dry); node.connect(revIn); node.connect(dIn);
       ready = true;
     } catch (e) {
       console.warn('AudioWorklet unavailable, using oscillator voices', e);
-      node = {fallback: true, rev}; ready = true;
+      node = {fallback: true, rev: revIn, dly: dIn}; ready = true;
     }
     return true;
   }
@@ -50,7 +67,7 @@ const Sound = (() => {
     const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(), p = ctx.createStereoPanner();
     o.type = 'triangle'; o.frequency.value = mtof(n.midi);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.25 * n.vel, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3 + 2 * n.dur);
-    p.pan.value = n.pan; o.connect(g); g.connect(p); p.connect(dry); p.connect(node.rev);
+    p.pan.value = n.pan; o.connect(g); g.connect(p); p.connect(dry); p.connect(node.rev); p.connect(node.dly);
     o.start(t); o.stop(t + 0.4 + 2 * n.dur);
   }
 
@@ -90,5 +107,22 @@ const Sound = (() => {
   }
   function setVolume(v) { if (master) master.gain.value = v; }
   function setReverb(v) { if (wet) wet.gain.value = v; }
-  return {start, play, initMIDI, setOutput, allNotesOff, setVolume, setReverb, attachEar, setEarSource, running: () => !!ctx && ctx.state === 'running'};
+  function setReverbOn(on) { if (revIn) revIn.gain.setTargetAtTime(on ? 1 : 0, ctx.currentTime, 0.03); }
+  // Echo, pushed by motion. With depth d: sideways motion pulls the two echo times apart (they lean the way the scene
+  // moves; while they shift the repeats bend in pitch, like tape), upward motion raises the feedback and downward
+  // lowers it, and the send follows the motion's strength, so a still scene lets the echo fall quiet.
+  function applyDelay(jump) {
+    const d = D.depth, c = v => Math.max(0.02, Math.min(2.5, v));
+    now.tL = c(D.time * (1 + 0.6 * d * M.mx)); now.tR = c(D.time * (1 - 0.6 * d * M.mx));
+    now.fb = Math.max(0, Math.min(0.92, D.fb + 0.35 * d * M.my));
+    now.send = D.on ? D.mix * (1 - d + d * M.s) : 0;
+    if (!dIn) return;
+    const t = ctx.currentTime, tc = jump ? 0.01 : 0.12;
+    dL.delayTime.setTargetAtTime(now.tL, t, tc); dR.delayTime.setTargetAtTime(now.tR, t, tc);
+    fbL.gain.setTargetAtTime(now.fb, t, 0.08); fbR.gain.setTargetAtTime(now.fb, t, 0.08);
+    dIn.gain.setTargetAtTime(now.send, t, 0.08);
+  }
+  function setDelay(o) { Object.assign(D, o); applyDelay(); }
+  function setMotion(mx, my, s) { M.mx = mx; M.my = my; M.s = s; applyDelay(); }
+  return {start, play, initMIDI, setOutput, allNotesOff, setVolume, setReverb, setReverbOn, setDelay, setMotion, get echo() { return now; }, attachEar, setEarSource, running: () => !!ctx && ctx.state === 'running'};
 })();

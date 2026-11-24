@@ -94,9 +94,22 @@
   for (const id of ['gTauA', 'gK', 'gPool', 'gC50', 'gTauN']) bindRange(id, () => ready && sendGain());
   for (const id of ['gAdapt', 'gNorm', 'gTarget']) $(id).onchange = sendGain;
   bindRange('vol', v => Sound.setVolume(v)); bindRange('rev', v => Sound.setReverb(v));
+  // echo and room
+  const echoSet = () => Sound.setDelay({on: $('dlyOn').checked, time: +$('dlyTime').value, fb: +$('dlyFb').value, mix: +$('dlyMix').value, depth: +$('dlyMotion').value});
+  for (const id of ['dlyTime', 'dlyFb', 'dlyMix', 'dlyMotion']) bindRange(id, echoSet);
+  $('dlyOn').onchange = echoSet; $('revOn').onchange = () => Sound.setReverbOn($('revOn').checked);
+  // the fly's motion read-out drives the echo, about 15 times a second
+  setInterval(() => {
+    if (!ready || !Sound.running()) return;
+    const m = window.__flyharp.motion(), s = Math.min(1, m.mag * 2);
+    Sound.setMotion(Math.cos(m.dir) * s, Math.sin(m.dir) * s, s);
+    const e = Sound.echo;
+    if ($('dlyOn').checked) $('echoNow').textContent = `now: left ${Math.round(1000 * e.tL)} ms · right ${Math.round(1000 * e.tR)} ms · feedback ${e.fb.toFixed(2)} · send ${e.send.toFixed(2)}`;
+    else $('echoNow').textContent = 'echo off';
+  }, 66);
   function bindRange(id, fn) {
     const el = $(id), o = el.parentElement.querySelector('output');
-    const fmt = v => id === 'direction' ? v + '°' : id === 'tempo' ? v.toFixed(2) + '×' : id === 'light' ? '×' + +(2 ** v).toPrecision(2) : id === 'gTauA' ? v.toFixed(1) + ' s' : v;
+    const fmt = v => id === 'direction' ? v + '°' : id === 'dlyTime' ? Math.round(v * 1000) + ' ms' : id === 'tempo' ? v.toFixed(2) + '×' : id === 'light' ? '×' + +(2 ** v).toPrecision(2) : id === 'gTauA' ? v.toFixed(1) + ' s' : v;
     const upd = () => { const v = +el.value; if (o) o.textContent = fmt(v); fn(v); };
     el.addEventListener('input', upd); upd();
   }
@@ -200,7 +213,7 @@
   $('midiOut').onchange = () => Sound.setOutput($('midiOut').value);
   $('go').onclick = async () => {
     if (!playing) {
-      await Sound.start(); Sound.setVolume(+$('vol').value); Sound.setReverb(+$('rev').value); Tonnectome.onAudioStart();
+      await Sound.start(); Sound.setVolume(+$('vol').value); Sound.setReverb(+$('rev').value); Sound.setReverbOn($('revOn').checked); echoSet(); Tonnectome.onAudioStart();
       if (P.kind === 'webcam') await useCamera();
       playing = true; $('go').textContent = '❚❚ Pause sound'; $('go').classList.add('playing');
       const outs = await Sound.initMIDI();

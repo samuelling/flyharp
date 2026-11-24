@@ -326,3 +326,5 @@ input.ihMoved,select.ihMoved{outline:2px solid #FFD23F;outline-offset:2px;border
 /* the Invisible Hands mark, in its on-dark inks */
 :root{--ih-teal:#2FB3B0;--ih-flame:#FF7A45;--ih-cut:#101217}
 input.ihMoved,select.ihMoved,button.ihMoved{outline-color:#2FB3B0}
+
+.echoNow{font-variant-numeric:tabular-nums;color:#2FB3B0;margin:-2px 0 6px}

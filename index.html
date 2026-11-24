@@ -6,7 +6,7 @@
 <title>FlyHarp · a synthesizer played by the fly visual system</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@800&family=Bowlby+One+SC&family=Courier+Prime:wght@400;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202611200341">
+<link rel="stylesheet" href="css/style.css?v=202611241155">
 </head>
 <body>
 <header>
@@ -233,10 +233,19 @@
       <label>applies to <select id="fbTarget"><option value="1">lamina</option><option value="01">retina + lamina</option><option value="01234">all areas</option></select></label>
       <canvas id="fbMeter" width="260" height="46"></canvas>
       <p class="hint">feedback per eye region (sectors as seen on the eye)</p></div>
+        <div class="grp "><h3>Echo &amp; room</h3>
+      <label class="row"><input type="checkbox" id="dlyOn" checked> echo</label>
+      <label>echo time <input type="range" id="dlyTime" min="0.05" max="1.2" step="0.01" value="0.38"><output></output></label>
+      <label>echo feedback <input type="range" id="dlyFb" min="0" max="0.9" step="0.01" value="0.4"><output></output></label>
+      <label>echo level <input type="range" id="dlyMix" min="0" max="1" step="0.05" value="0.3"><output></output></label>
+      <label>motion → echo <input type="range" id="dlyMotion" min="0" max="1" step="0.05" value="0.6"><output></output></label>
+      <p class="hint echoNow" id="echoNow"></p>
+      <p class="hint">The fly's motion detectors play the echo (the same read-out that draws the arrows on the eye). Sideways motion pulls the left and right echoes apart, so they lean the way the scene moves and bend in pitch while they shift, like tape. Upward motion lets the echoes ring longer; downward cuts them short. The more motion, the more echo: a still scene lets it fall quiet. <i>motion → echo</i> sets how much; at zero the echo is fixed.</p>
+      <label class="row"><input type="checkbox" id="revOn" checked> reverb</label>
+      <label>reverb <input type="range" id="rev" min="0" max="1" step="0.05" value="0.35"><output></output></label></div>
         <div class="grp "><h3>Output</h3>
       <label class="row"><input type="checkbox" id="internal" checked> internal harp</label>
       <label>volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.7"><output></output></label>
-      <label>reverb <input type="range" id="rev" min="0" max="1" step="0.05" value="0.35"><output></output></label>
       <label>MIDI out <select id="midiOut"><option value="">none</option></select></label>
       <label>MIDI channels <select id="midiCh"><option value="layer">per area: depol 1–5, hyperpol 6–10</option><option value="single">depol on 1, hyperpol on 2</option></select></label></div>
       </div>
@@ -348,18 +357,18 @@
   </div>
 </div>
 <div id="tip" class="tip" role="tooltip"></div>
-<script>window.FH_V = '202611200341';  /* build stamp, set by tools/stamp.py: versions workers, worklet and data too */</script>
-<script src="js/info.js?v=202611200341"></script>
-<script src="js/stimuli.js?v=202611200341"></script>
-<script src="js/eyegeom.js?v=202611200341"></script>
-<script src="js/ear-net.js?v=202611200341"></script>
-<script src="js/tonnectome.js?v=202611200341"></script>
-<script src="js/audio.js?v=202611200341"></script>
-<script src="js/vendor/invisible-hands.js?v=202611200341"></script>
-<script src="js/hands.js?v=202611200341"></script>
-<script src="js/synth.js?v=202611200341"></script>
-<script src="js/app.js?v=202611200341"></script>
-<script type="module" src="js/ear3d.js?v=202611200341"></script>
-<script type="module" src="js/lobe.js?v=202611200341"></script>
+<script>window.FH_V = '202611241155';  /* build stamp, set by tools/stamp.py: versions workers, worklet and data too */</script>
+<script src="js/info.js?v=202611241155"></script>
+<script src="js/stimuli.js?v=202611241155"></script>
+<script src="js/eyegeom.js?v=202611241155"></script>
+<script src="js/ear-net.js?v=202611241155"></script>
+<script src="js/tonnectome.js?v=202611241155"></script>
+<script src="js/audio.js?v=202611241155"></script>
+<script src="js/vendor/invisible-hands.js?v=202611241155"></script>
+<script src="js/hands.js?v=202611241155"></script>
+<script src="js/synth.js?v=202611241155"></script>
+<script src="js/app.js?v=202611241155"></script>
+<script type="module" src="js/ear3d.js?v=202611241155"></script>
+<script type="module" src="js/lobe.js?v=202611241155"></script>
 </body>
 </html>

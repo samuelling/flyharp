@@ -67,7 +67,8 @@ const Hands = (() => {
       // stimulus (the camera is the player's to switch on)
       menu('kind', 'Stimulus', ['webcam']), range('contrast', 'Contrast'), range('size', 'Size'), range('speed', 'Speed'), range('direction', 'Direction'), range('light', 'Light'),
       // instrument
-      range('tempo', 'Tempo'), range('thresh', 'Threshold'), range('rate', 'Note rate'), range('spread', 'Spread'), range('vol', 'Volume'), range('rev', 'Reverb'),
+      range('tempo', 'Tempo'), range('thresh', 'Threshold'), range('rate', 'Note rate'), range('spread', 'Spread'), range('vol', 'Volume'), toggle('revOn', 'Reverb on'), range('rev', 'Reverb'),
+      toggle('dlyOn', 'Echo on'), range('dlyTime', 'Echo time'), range('dlyFb', 'Echo feedback'), range('dlyMix', 'Echo level'), range('dlyMotion', 'Motion → echo'),
       menu('scale', 'Scale'), menu('root', 'Root'), toggle('spatial', 'Spatial pan'), toggle('fbOn', 'Feedback timbre'), range('fbDepth', 'Feedback depth'), menu('fbTarget', 'Feedback target'),
     ];
     // the per-area mixer: one instrument, level and mute for each stage of the optic lobe
